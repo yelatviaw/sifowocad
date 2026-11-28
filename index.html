@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Shift Production Report</title>
-  <link rel="stylesheet" href="style.css"
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div id="report">
@@ -12,12 +12,11 @@
   
   <button class="btn" id="admin-toggle">Admin Mode: OFF</button>
   <button class="btn" id="pdf-btn" onclick="generatePDF()">Download PDF</button>
-  <button class="btn" id="summary-btn">Generate Summary</button>
+  <button class="btn" id="summary-btn" onclick="generateSummary()">Generate Summary</button>
   <button class="btn" id="add-tech-list-btn">Add Technician</button> 
   <button class="btn" id="remove-tech-list-btn" style="background:#e53935;">Remove Technician</button>
   <button class="btn" id="clear-storage-btn" style="background:#ff9800;" onclick="if(confirm('Completely wipe application memory and reload?')) { localStorage.clear(); location.reload(); }">Clear Saved Data</button>
- 
-</table>
+
   <table id="headerTable">
     <thead>
       <tr>
@@ -48,7 +47,7 @@
             <option value="nc">NC</option>
             <option value="nm">NM</option>
             <option value="sc">SC</option>
-            <option value="tx">WC</option>
+            <option value="tx">TX</option>
           </select>
         </td>
         <td>
@@ -120,8 +119,16 @@
   <div id="techPerformanceModal" class="tech-modal-overlay" onclick="if(event.target === this) closeTechModal();">
     <div class="tech-modal-content">
       <span class="tech-modal-close" onclick="closeTechModal()">&times;</span>
-      <h3 id="modalTechTitle" style="color:#1d4d7a; margin-top:0;">Technician Performance History</h3>
-      <p id="modalTechSummary" style="font-size:13px; font-weight:bold; color:#555;"></p>
+      
+      <!-- Profile Header with Image -->
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">
+        <img id="modalTechAvatar" src="" alt="Technician" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #1d4d7a; background: #e2e8f0;">
+        <div>
+          <h3 id="modalTechTitle" style="color:#1d4d7a; margin:0; font-size:18px;">Technician Performance History</h3>
+          <p id="modalTechSummary" style="font-size:12px; font-weight:bold; color:#555; margin: 2px 0 0 0;"></p>
+        </div>
+      </div>
+
       <table class="tech-modal-table" id="modalTechTable">
         <thead>
           <tr>
@@ -135,13 +142,16 @@
       </table>
     </div>
   </div>
+</div>
 
+  <!-- External Library Dependencies -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
   
-  <script src="app.js"></script>
+  <!-- Scripts Execution Dependencies Order -->
   <script src="config.js"></script>
-  <script src="pdf-generator.js"></script>
   <script src="technicians.js"></script>
+  <script src="pdf-generator.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
