@@ -9,13 +9,12 @@
 <body>
 <div id="report">
   <h2 style="text-align:center;">GirmaReport or CAD Production Report</h2
-  <button class="btn" id="admin-toggle">Admin Mode: OFF</button>
+  <button class="btn" id="admin-toggle">Admin Mode: OFF</button>                                                                    
   <button class="btn" id="pdf-btn" onclick="generatePDF()">Download PDF</button>
   <button class="btn" id="summary-btn" onclick="generateSummary()">Generate Summary</button>
   <button class="btn" id="add-tech-list-btn">Add Technician</button> 
   <button class="btn" id="remove-tech-list-btn" style="background:#e53935;">Remove Technician</button>
   <button class="btn" id="clear-storage-btn" style="background:#ff9800;" onclick="if(confirm('Completely wipe application memory and reload?')) { localStorage.clear(); location.reload(); }">Clear Saved Data</button>
-  <button class="btn" id="about-cad-btn">About CAD</button> 
 
   <table id="headerTable">
     <thead>
