@@ -12,13 +12,12 @@ function generatePDF() {
   const pageHeight = doc.internal.pageSize.getHeight();
   const pageWidth = doc.internal.pageSize.getWidth();
 
-  // Fetch top-level configuration metadata metrics
   const headerData = getHeaderData();
 
   // --- Document Title Banner ---
   doc.setFont("Helvetica", "bold");
   doc.setFontSize(18);
-  doc.setTextColor(29, 77, 122); // Deep Navy (#1D4D7A)
+  doc.setTextColor(29, 77, 122);
   doc.text("CAD Production Report (GForm) Connect", 14, 18);
 
   // --- Header Metadata Table Layout ---
@@ -41,7 +40,7 @@ function generatePDF() {
   let currentY = doc.lastAutoTable.finalY + 14;
 
   // ==========================================================================
-  // 1. CAD PRODUCTION SUMMARY REPORT (Directly below Header Table)
+  // 1. CAD PRODUCTION SUMMARY REPORT
   // ==========================================================================
   const summaryRows = [];
   document.querySelectorAll("#summaryTable tbody tr").forEach((tr) => {
@@ -81,7 +80,6 @@ function generatePDF() {
   doc.setTextColor(29, 77, 122);
   doc.text("Detail Report by Lineup", 14, currentY - 4);
 
-  // Added distinct 5mm gap block buffer space right underneath text
   currentY += 5;
 
   const boxes = document.querySelectorAll("#container .box");
@@ -99,7 +97,6 @@ function generatePDF() {
     const comments = box.querySelector(".section-comment")?.value.trim() || "No comments entered.";
     const avgScore = box.querySelector(".avg")?.innerText || "AVG: 0%";
 
-    // Section Block Header Context Banner
     doc.setFontSize(12);
     doc.setFont("Helvetica", "bold");
     doc.setTextColor(29, 77, 122);
@@ -107,30 +104,25 @@ function generatePDF() {
     currentY += 4;
     sectionCounter++; 
 
-    // Lineup Parameters Bar
     doc.setFontSize(9);
     doc.setFont("Helvetica", "normal");
     doc.setTextColor(80, 80, 80);
     doc.text(`SO: ${so}  |  Shift: ${shift}  |  TB: ${tb}  |  Metrics: ${avgScore}`, 14, currentY);
     currentY += 5;
 
-    // Collect rows
     const rowsData = [];
     box.querySelectorAll("table[id$='Table'] tbody tr").forEach((row) => {
       const task = row.querySelector(".task")?.value || "";
       const sectionNo = row.querySelector(".row-section-select")?.value || "-";
       
       const progRaw = row.querySelector(".prog")?.value || "";
-      // Conditionally attach % only if it is a numeric value, keep raw text if "N/A"
       const progress = (progRaw !== "" && progRaw !== "N/A") ? `${progRaw}%` : progRaw || "-";
       
-      // FIX: Changed from getTechList to safeGetTechList to maintain app.js schema integrity
       const techniciansList = safeGetTechList(row).join(", ") || "-";
       
       rowsData.push([task, sectionNo, progress, techniciansList]);
     });
 
-    // Render task data profiles - Full grids with internal striped rows
     doc.autoTable({
       startY: currentY,
       theme: "striped", 
@@ -149,7 +141,6 @@ function generatePDF() {
 
     currentY = doc.autoTable.previous.finalY + 5;
 
-    // --- Dynamic Additional Connection Matrix ---
     if (!isFloorCredit) {
       const matrixSelections = [];
       box.querySelectorAll(".matrix-tech-select").forEach((select) => {
@@ -189,7 +180,6 @@ function generatePDF() {
       }
     }
 
-    // --- Comment Meta Box output context ---
     doc.setFont("Helvetica", "oblique");
     doc.setFontSize(8.5);
     doc.setTextColor(100, 100, 100);
@@ -198,7 +188,6 @@ function generatePDF() {
     doc.text(wrappedComments, 14, currentY);
     currentY += (wrappedComments.length * 4.5) + 4;
 
-    // --- Container Visual Split Divider ---
     doc.setDrawColor(200, 215, 225);
     doc.setLineWidth(0.4);
     doc.line(14, currentY, 196, currentY);
@@ -214,29 +203,30 @@ function generatePDF() {
   document.querySelectorAll("#floorCreditTable tbody tr").forEach((tr) => {
     const tds = tr.querySelectorAll("td");
     if (tds.length >= 5) {
-      rawPerformanceData.push({
-        name: tds[0].innerText.replace(" ×", "").trim(),
-        lineupInfo: tds[1].innerText,
-        task: tds[2].innerText,
-        sectionNo: tds[3].innerText,
-        timestamp: tds[4].innerText
-      });
+      const name = tds[0].innerText.replace(" ×", "").trim();
+      if (name.toLowerCase() !== "teamwork" && name.toLowerCase() !== "team work") {
+        rawPerformanceData.push({
+          name: name,
+          lineupInfo: tds[1].innerText,
+          task: tds[2].innerText,
+          sectionNo: tds[3].innerText,
+          timestamp: tds[4].innerText
+        });
+      }
     }
   });
 
   if (rawPerformanceData.length > 0) {
-    // Tally frequency metrics to map top technician assignment weight scales
     const techCounts = {};
     rawPerformanceData.forEach(item => {
       techCounts[item.name] = (techCounts[item.name] || 0) + 1;
     });
 
-    // Enforce matching rank parameters to cluster technician elements cohesively without dispersion
     rawPerformanceData.sort((a, b) => {
       if (techCounts[b.name] !== techCounts[a.name]) {
-        return techCounts[b.name] - techCounts[a.name]; // Highest overall volume remains at peak index
+        return techCounts[b.name] - techCounts[a.name];
       }
-      return a.name.localeCompare(b.name); // Secondary alphabetical fallback
+      return a.name.localeCompare(b.name);
     });
 
     const performanceRows = rawPerformanceData.map(item => [
@@ -271,7 +261,7 @@ function generatePDF() {
     });
   }
 
-  // --- Global Dynamic Page Counter Injection Engine ---
+  // Footer Page Counter
   const totalPages = doc.internal.getNumberOfPages();
   for (let i = 1; i <= totalPages; i++) {
     doc.setPage(i);
@@ -281,6 +271,5 @@ function generatePDF() {
     doc.text(`Page ${i} of ${totalPages}`, pageWidth - 32, pageHeight - 12);
   }
 
-  // Save Document Context Output
   doc.save(`Production_Report_${headerData.date.replace(/[/,:\s]/g, "_")}.pdf`);
 }
