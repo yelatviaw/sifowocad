@@ -379,7 +379,7 @@ th {
     -webkit-overflow-scrolling: touch;
   }
 }
- /* Interactive Performance Modal Overlay Engine Layout Styles */
+/* Interactive Performance Modal Overlay Engine Layout Styles */
     .tech-modal-overlay {
       display: none;
       position: fixed;
@@ -415,7 +415,5 @@ th {
       border: 1px solid #ddd; padding: 8px; text-align: center;
     }
     .tech-modal-table th { background: #1d4d7a; color: white; font-weight: bold; }
-    .tech-modal-table tr:nth-child(even) { background: #f9f9f9; 
-    }
-
+    .tech-modal-table tr:nth-child(even) { background: #f9f9f9; }
 
